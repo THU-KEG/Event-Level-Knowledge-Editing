@@ -7,8 +7,11 @@ The code repository is based on Pytorch and Transformers. Please use the followi
 
 ## 2. Data Processor
 Using `./data_processor/processor.py` to process data for the method ICE (In-context Editing)
+
 For the retrieval method, please first retrieve events for each question using codes in `./retrieval`. And then using `./data_processor/processor_retrieval.py` to process data.
+
 For the SERAC method, please first use the codes in `./serac` to train a scope classifier and determine whether a question needs an retrieved event. And then using `./data_processor/processor_serac.py` to process data.
+
 For the fine-tuning method, please first use the codes in `./fine-tuning` to fine-tune an LLM using all the events in test set with a language modelling object. And then using `./data_processor/processor_ft.py` to process data.
 
 ## 3. Run Experiments
