@@ -1,0 +1,1 @@
+python openai-models.py --test_file ../model-know/data/gpt-3.5/fact_recall.json
