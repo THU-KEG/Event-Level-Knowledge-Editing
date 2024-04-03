@@ -3,6 +3,7 @@ import os
 import json
 import random
 from pathlib import Path
+import argparse
 
 
 class FactDataProcessor():
@@ -64,7 +65,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": True,
                         "question_type": "NA"
@@ -97,7 +97,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": False,
                         "question_type": qa["type"]
@@ -197,7 +196,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": True,
                     },
@@ -227,7 +225,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": False
                     },
@@ -253,21 +250,46 @@ class TendencyDataProcessor():
 
 
 if __name__ == "__main__":
-    # processor = FactDataProcessor(test_file="../retrieval/data/multilingual-e5-large/fact/test-with-retrieval.json", 
-    #                           save_dir="../data/processed/fact/gemini-pro", 
-    #                           sample=1.0,
-    #                           save_name="fact_e5",
-    #                           only_local=False)
-    # processor.process()
-    # processor.save_data()
+    parser = argparse.ArgumentParser(description="Process for retrieval")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    parser.add_argument("--retriever", type=str, default="multilingual-e5-large", choices=["multilingual-e5-large", "bm25"])
+    args = parser.parse_args()
 
-    models = ["mistral-7b", "gemini-pro", "gpt-3.5", "gpt-4"]
-    # models = ["gemini-pro"]
-    for model in models:
-        processor = TendencyDataProcessor(test_file="../retrieval/data/multilingual-e5-large/tendency/test-with-retrieval.json",
-                                save_dir=f"../data/processed/tendency/{model}/local", 
-                                sample=1.0, 
-                                save_name="tendency_mc_e5",
-                                multi_choice=True)
-        processor.process()
-        processor.save_data()
+    # Storage is in-place when experimenting with LLMs (GPT-3.5, GPT-4, Gemini Pro) that require API access, 
+    # so one copy of data is stored per model, which are identical.
+
+    suffix = ""
+    if args.retriever == "multilingual-e5-large":
+        suffix = "_e5" 
+    elif args.retriever == "bm25":
+        suffix = "_bm25"
+    else:
+        raise ValueError()
+
+    # Factual knowledge
+    processor = FactDataProcessor(test_file=f"../retrieval/data/{args.retriever}/fact/test-with-retrieval.json", 
+                              save_dir=f"../data/processed/fact/{args.model}", 
+                              sample=1.0,
+                              save_name=f"fact{suffix}",
+                              only_local=False)
+    processor.process()
+    processor.save_data()
+
+
+    # Tendency: Multiple Choice 
+    processor = TendencyDataProcessor(test_file=f"../retrieval/data/{args.retriever}/tendency/test-with-retrieval.json",
+                            save_dir=f"../data/processed/tendency/{args.model}", 
+                            sample=1.0, 
+                            save_name=f"tendency_mc{suffix}",
+                            multi_choice=True)
+    processor.process()
+    processor.save_data()
+
+    # Tendency: Open-ended Generation 
+    processor = TendencyDataProcessor(test_file=f"../retrieval/data/{args.retriever}/tendency/test-with-retrieval.json",
+                            save_dir=f"../data/processed/tendency/{args.model}", 
+                            sample=1.0, 
+                            save_name=f"tendency_gen{suffix}",
+                            multi_choice=False)
+    processor.process()
+    processor.save_data()

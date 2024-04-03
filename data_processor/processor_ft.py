@@ -50,7 +50,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": True,
                         "question_type": "NA"
@@ -79,7 +78,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": False,
                         "question_type": qa["type"]
@@ -178,7 +176,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": True,
                     },
@@ -207,7 +204,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": False
                     },
@@ -233,15 +229,22 @@ class TendencyDataProcessor():
 
 
 if __name__ == "__main__":
-    # processor = FactDataProcessor(test_file="../data/original/test.json", 
-    #                           save_dir="../data/processed/fact/mistral-7b", 
-    #                           sample=1.0)
-    # processor.process()
-    # processor.save_data()
+    processor = FactDataProcessor(test_file="../data/original/test.json", 
+                              save_dir="../data/processed/fact/mistral-7b", 
+                              sample=1.0)
+    processor.process()
+    processor.save_data()
 
     processor = TendencyDataProcessor(test_file="../data/original/test.json", 
                               save_dir="../data/processed/tendency/mistral-7b",
                               sample=1.0, 
                               multi_choice=True)
+    processor.process()
+    processor.save_data()
+
+    processor = TendencyDataProcessor(test_file="../data/original/test.json", 
+                              save_dir="../data/processed/tendency/mistral-7b",
+                              sample=1.0, 
+                              multi_choice=False)
     processor.process()
     processor.save_data()

@@ -2,6 +2,7 @@ import os
 import json
 import random
 from pathlib import Path
+import argparse
 
 
 class FactDataProcessor():
@@ -62,7 +63,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": True,
                         "question_type": "NA",
@@ -92,7 +92,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": False,
                         "question_type": qa["type"],
@@ -202,7 +201,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": True,
                         "serac_event": qa["serac_event"]
@@ -232,7 +230,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": False,
                         "serac_event": qa["serac_event"]
@@ -259,19 +256,29 @@ class TendencyDataProcessor():
 
 
 if __name__ == "__main__":
-    # processor = FactDataProcessor(test_file="../serac/output/fact/test-with-serac.json", 
-    #                           save_dir="../data/processed/fact/gpt-3.5", 
-    #                           sample=1.0)
-    # processor.process()
-    # processor.save_data()
+    parser = argparse.ArgumentParser(description="Process for SERAC")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    args = parser.parse_args()
 
-    # models = ["gpt-3.5", "gpt-4", "gemini-pro", "mistral-7b"]
-    # models = ["gemini-pro"]
-    models = ["mistral-7b"]
-    for model in models:
-        processor = TendencyDataProcessor(test_file="../serac/output/tendency/test-with-serac.json", 
-                                save_dir=f"../data/processed/tendency/{model}",
-                                sample=1.0, 
-                                multi_choice=False)
-        processor.process()
-        processor.save_data()
+    # Factual Knowledge
+    processor = FactDataProcessor(test_file="../serac/output/fact/test-with-serac.json", 
+                              save_dir=f"../data/processed/fact/{args.model}", 
+                              sample=1.0)
+    processor.process()
+    processor.save_data()
+
+    # Tendency: Multiple Choice
+    processor = TendencyDataProcessor(test_file="../serac/output/tendency/test-with-serac.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=True)
+    processor.process()
+    processor.save_data()
+
+    # Tendency: Open-ended Generation
+    processor = TendencyDataProcessor(test_file="../serac/output/tendency/test-with-serac.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=False)
+    processor.process()
+    processor.save_data()

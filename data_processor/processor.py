@@ -2,6 +2,7 @@ import os
 import json
 import random
 from pathlib import Path
+import argparse
 
 
 class FactDataProcessor():
@@ -62,7 +63,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": True,
                         "question_type": "NA"
@@ -94,7 +94,6 @@ class FactDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"],
                         "local": False,
                         "question_type": qa["type"]
@@ -195,7 +194,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": True,
                     },
@@ -224,7 +222,6 @@ class TendencyDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": False
                     },
@@ -324,7 +321,6 @@ class TendencyLocalDataProcessor():
                         "input": {
                             "text": input
                         },
-                        "id": item["id"],
                         "answer": qa["answer"] if self.multi_choice else options[qa["answer"]],
                         "local": True,
                     },
@@ -352,19 +348,60 @@ class TendencyLocalDataProcessor():
 
 
 if __name__ == "__main__":
-    # processor = FactDataProcessor(test_file="../data/original/test.json", 
-    #                           save_dir="../data/processed/fact/gemini-pro", 
-    #                           sample=1.0, 
-    #                           only_local=False)
-    # processor.process()
-    # processor.save_data()
+    parser = argparse.ArgumentParser(description="Process for IKE")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    args = parser.parse_args()
 
-    models = ["mistral-7b", "gemini-pro", "gpt-3.5", "gpt-4"]
-    # models = ["gemini-pro"]
-    for model in models:
-        processor = TendencyDataProcessor(test_file="../data/original/test.json", 
-                                save_dir=f"../data/processed/tendency/{model}/local",
-                                sample=1.0, 
-                                multi_choice=True)
-        processor.process()
-        processor.save_data()
+    # Storage is in-place when experimenting with LLMs (GPT-3.5, GPT-4, Gemini Pro) that require API access, 
+    # so one copy of data is stored per model, which are identical.
+
+
+    # Factual knowledge
+    processor = FactDataProcessor(test_file="../data/original/test.json", 
+                              save_dir=f"../data/processed/fact/{args.model}",
+                              sample=1.0, 
+                              only_local=False)
+    processor.process()
+    processor.save_data()
+
+    # Factual knowledge: locality data
+    processor = FactDataProcessor(test_file="../data/original/test.json", 
+                              save_dir=f"../data/processed/fact/{args.model}",
+                              sample=1.0, 
+                              only_local=True)
+    processor.process()
+    processor.save_data()
+
+
+    # Tendency: Multiple Choice 
+    processor = TendencyDataProcessor(test_file="../data/original/test.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=True)
+    processor.process()
+    processor.save_data()
+
+    # Tendency: Open-ended Generation 
+    processor = TendencyDataProcessor(test_file="../data/original/test.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=False)
+    processor.process()
+    processor.save_data()
+
+
+    # Tendency: locality data
+    processor = TendencyLocalDataProcessor(test_file="../data/original/test.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=True)
+    processor.process()
+    processor.save_data()
+
+    # Tendency: Open-ended Generation 
+    processor = TendencyLocalDataProcessor(test_file="../data/original/test.json", 
+                            save_dir=f"../data/processed/tendency/{args.model}",
+                            sample=1.0, 
+                            multi_choice=False)
+    processor.process()
+    processor.save_data()

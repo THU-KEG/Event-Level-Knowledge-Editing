@@ -100,22 +100,24 @@ def search_for_tendency(data_path, retriever, save_dir):
 
 
 if __name__ == "__main__":
-    # model_name = "/data3/MODELS/multilingual-e5-large"
-    # data_path = "../data/test.json"
-    # save_dir = Path("data/{}".format(model_name.split("/")[-1]))
-    # save_dir.mkdir(exist_ok=True, parents=True)
+    # Factual Knowledge
+    model_name = "/data3/MODELS/multilingual-e5-large"
+    data_path = "../data/original/test.json"
+    save_dir = Path("data/{}/fact".format(model_name.split("/")[-1]))
+    save_dir.mkdir(exist_ok=True, parents=True)
 
-    # corpus_sentences = load_fact_corpus(data_path)
-    # data_type = "test-fact"
-    # retriever = DenseRetriever(model_name, corpus_sentences, data_type, save_dir)
-    # search_for_fact(data_path, retriever, save_dir)
+    corpus_sentences = load_fact_corpus(data_path)
+    data_type = "test-fact"
+    retriever = DenseRetriever(model_name, corpus_sentences, data_type, save_dir)
+    search_for_fact(data_path, retriever, save_dir)
 
+    # Tendency
     model_name = "/data3/MODELS/multilingual-e5-large"
     data_path = "../data/original/test.json"
     save_dir = Path("data/{}/tendency".format(model_name.split("/")[-1]))
     save_dir.mkdir(exist_ok=True, parents=True)
 
     corpus_sentences = load_tendency_corpus(data_path)
-    data_type = "test"
+    data_type = "test-tendency"
     retriever = DenseRetriever(model_name, corpus_sentences, data_type, save_dir)
     search_for_tendency(data_path, retriever, save_dir)

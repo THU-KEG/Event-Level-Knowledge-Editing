@@ -6,20 +6,53 @@ Dataset and code for "Event-Level Knowledge Editing". Event-level knowledge edit
 The code repository is based on Pytorch and Transformers. Please use the following command to install the necessary dependcies. `pip install -r requirements.txt`.
 
 ## 2. Data Processor
-Using `./data_processor/processor.py` to process data for the method ICE (In-context Editing)
+Use `run-processor.sh` to process data for different models. Storage is in-place when experimenting with LLMs (GPT-3.5, GPT-4, Gemini Pro) that require API access, so we store one copy of identical data per model. 
+```
+MODEL="gpt-3.5" # specify the model
 
-For the retrieval method, please first retrieve events for each question using codes in `./retrieval`. And then using `./data_processor/processor_retrieval.py` to process data.
+cd data_processor
 
-For the SERAC method, please first use the codes in `./serac` to train a scope classifier and determine whether a question needs an retrieved event. And then using `./data_processor/processor_serac.py` to process data.
+# process for IKE
+python processor.py --model $MODEL
 
-For the fine-tuning method, please first use the codes in `./fine-tuning` to fine-tune an LLM using all the events in test set with a language modelling object. And then using `./data_processor/processor_ft.py` to process data.
+# process for ft
+python processor_ft.py
+
+# process for serac
+python processor_serac.py --model $MODEL
+
+# process for retrieval
+python processor_retrieval.py --model $MODEL
+
+```
+
+Processing for Retrieval-based method and SERAC requires some pre-processing, and we provide our preprocessed files so you can just run `bash run-processor.sh`.
+
+ If you want to preprocess it yourself, please use the following scripts:
+
+```
+# For SERAC
+cd serac
+bash run.sh
+bash infer.sh
+
+# For Retrieval
+cd retrieval
+python bm25.py
+python densy.py
+
+```
+
+
 
 ## 3. Run Experiments
-Using the codes in the folder `./llm` to evaluate GPT-3.5, GPT-4, and Gemini Pro. You need to place your api key in corresponding files.
-Using the codes in the folder `./open-source` to evaluate GPT-J, TULU 2, and Mistral 7B.
+Using the codes in the folder `./llm` to evaluate GPT-3.5, GPT-4, and Gemini Pro. You need to place your api key in corresponding files. Note that to run SERAC experiments you must use `serac.py`.
+Using the codes in the folder `./open-source` to evaluate GPT-J, TULU 2, and Mistral 7B. You need to specify `data_root_path` and `datasets` in `open-source/temp.py`.
+
+
 
 ## 4. Evaluation
+
 Using `metric.py ` to get the reliability and locality for question-level and event-level metrics for factual knowledge and tendency separately.
 
-Using `overall_metric.py` to get the overall event-level metrics, i.e., an event edit is reliable if and only if all the corresponding questions about factual knowledge and tendencies are correct.
-
+Using `overall_event_level_metric.py` to get the overall event-level metrics, i.e., an event edit is reliable if and only if all the corresponding questions about factual knowledge and tendencies are correct.

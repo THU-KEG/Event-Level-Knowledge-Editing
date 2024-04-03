@@ -10,7 +10,6 @@
 #     --dataloader_prefetch_factor 1 \
 #     --overwrite_output_dir \
 #     --bf16
-    # --push_to_hub
 
 deepspeed --master_port=9904 --include localhost:1,2,3,7 run-clm.py \
     --model_name_or_path /data3/MODELS/tulu-v2-7b \

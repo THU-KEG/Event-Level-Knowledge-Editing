@@ -69,14 +69,16 @@ def search_for_tendency(data_path, bm25, save_dir):
 
 
 if __name__ == "__main__":
-    # data_path = "../data/original/test.json"
-    # save_dir = Path("data/bm25/fact-test")
-    # save_dir.mkdir(exist_ok=True, parents=True)
+    # Factual Knowledge
+    data_path = "../data/original/test.json"
+    save_dir = Path("data/bm25/fact")
+    save_dir.mkdir(exist_ok=True, parents=True)
 
-    # event_corpus = load_fact_corpus(data_path)
-    # bm25 = BM25Retriever(event_corpus)
-    # search_for_fact(data_path, bm25, save_dir)
+    event_corpus = load_fact_corpus(data_path)
+    bm25 = BM25Retriever(event_corpus)
+    search_for_fact(data_path, bm25, save_dir)
 
+    # Tendency
     data_path = "../data/original/test.json"
     save_dir = Path("data/bm25/tendency")
     save_dir.mkdir(exist_ok=True, parents=True)

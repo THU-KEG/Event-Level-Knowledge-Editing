@@ -1,7 +1,7 @@
 import os
 import json
 from collections import Counter
-
+import argparse
 
 def parse_score(score):
     metric = {}
@@ -88,18 +88,19 @@ def compute_score(path):
 
 
 if __name__ == "__main__":
-    # model = "gemini-pro"
-    # input_path = f"../data/processed/tendency/{model}/examiner/tendency_gen_bm25.json"
-    # pred_path = f"../data/processed/tendency/{model}/tendency_gen_bm25.json"
-    # dump_path = f"../data/processed/tendency/{model}/examiner/tendency_gen_bm25_exam.json"
-    # models = ["gpt-j-6b", "tulu-v2-7b", "Mistral-7B-Instruct-v0.2"]
-    models = ["gpt-j-6b"]
-    files = ["gen_ft", "gen_bm25", "gen_e5", "gen_serac", "gen"]
-    for model in models:
-        for file in files:
-            input_path = f"../open-source/output/{model}/examiner/tendency_{file}_predictions.json"
-            pred_path = f"../open-source/output/{model}/tendency_{file}_predictions.json"
-            dump_path = f"../open-source/output/{model}/examiner/tendency_{file}_exam.json"
-            print(input_path)
-            parse_result(input_path, pred_path, dump_path)
-            compute_score(dump_path)
+    parser = argparse.ArgumentParser(description="Parse for reliability")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    parser.add_argument("--file", type=str, default="gen", options=["gen_ft", "gen_bm25", "gen_e5", "gen_serac", "gen"])
+    args = parser.parse_args()
+
+    if args.model in ["gpt-j-6b", "tulu-v2-7b", "Mistral-7B-Instruct-v0.2"]:
+        input_path = f"../open-source/output/{args.model}/examiner/tendency_{args.file}_predictions.json"
+        pred_path = f"../open-source/output/{args.model}/tendency_{args.file}_predictions.json"
+        dump_path = f"../open-source/output/{args.model}/examiner/tendency_{args.file}_exam.json"
+    else:
+        input_path = f"../data/processed/tendency/{args.model}/examiner/tendency_{args.file}.json"
+        pred_path = f"../data/processed/tendency/{args.model}/tendency_{args.file}.json"
+        dump_path = f"../data/processed/tendency/{args.model}/examiner/tendency_{args.file}_exam.json"
+    print(input_path)
+    parse_result(input_path, pred_path, dump_path)
+    compute_score(dump_path)

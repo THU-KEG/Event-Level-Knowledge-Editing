@@ -28,7 +28,6 @@ CHAT = args.chat
 
 model_path = args.model_path
 print("model path: ", model_path)
-data_root_path = "../model-know/data/mistral-7b"
 if CHAT:
     print("chat mode")
 outputpath = Path("./output", model_path.split("/")[-1])
@@ -52,14 +51,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 print("device: ", device)
 # load dataset
-# tendency_gen_bm25.json  tendency_gen_e5.json  tendency_gen.json  tendency_mc_bm25.json  tendency_mc_e5.json  tendency_mc.json
-# datasets = ["tendency_gen_bm25.json", "tendency_gen_e5.json", "tendency_mc_bm25.json", "tendency_mc_e5.json", "tendency_mc.json"]
-# datasets = ["tendency_gen.json"]
-# datasets = ["tendency_mc_local.json", "tendency_gen_local.json"]
-# datasets = ["tendency_mc_serac.json", "tendency_gen_serac.json"]
-# datasets = ["fact_serac.json"]
-datasets = ["fact_recall.json"]
-# datasets = ["tendency_mc_ft.json", "tendency_gen_ft.json"]
+data_root_path = "../data/processed/mistral-7b"
+datasets = ["tendency_gen.json"]
 for dataset in datasets:
     data_path = os.path.join(data_root_path, dataset)
     print("Evaluating on dataset: ", data_path)

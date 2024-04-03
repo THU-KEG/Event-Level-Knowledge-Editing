@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 from collections import Counter, defaultdict
 from prompt import examples
+import argparse
 
 
 def load_generation(input_path):
@@ -111,27 +112,30 @@ def construct_query(input_path, save_path):
 
 
 if __name__ == "__main__":
-    # io_dir = "../data/processed/tendency/gemini-pro"
-    # # io_dir = "../open-source/output512/Mistral-7B-Instruct-v0.2"
-    # save_dir = Path(os.path.join(io_dir, "examiner"))
-    # save_dir.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description="Query data for reliability")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    parser.add_argument("--file", type=str, default="gen", options=["gen_ft", "gen_bm25", "gen_e5", "gen_serac", "gen"])
+    args = parser.parse_args()
 
-    # file_name = "tendency_gen_serac.json"
-    # input_path = os.path.join(io_dir, file_name)
-    # save_path = os.path.join(save_dir, file_name)
 
-    # construct_query(input_path, save_path)
+    if args.model in ["gpt-j-6b", "Mistral-7B-Instruct-v0.2", "tulu-v2-7b"]:
+        io_dir = f"../open-source/output/{args.model}"
+        save_dir = Path(os.path.join(io_dir, "examiner"))
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        input_path = os.path.join(io_dir, f"tendency_{args.file}_predictions.json")
+        save_path = os.path.join(save_dir, f"tendency_{args.file}_predictions.json")
+
+        construct_query(input_path, save_path)
+    else:
+        io_dir = f"../data/processed/tendency/{args.model}"
+        save_dir = Path(os.path.join(io_dir, "examiner"))
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        file_name = f"tendency_{args.file}.json"
+        input_path = os.path.join(io_dir, file_name)
+        save_path = os.path.join(save_dir, file_name)
+
+        construct_query(input_path, save_path)
     
-    for model in ["gpt-j-6b", "Mistral-7B-Instruct-v0.2", "tulu-v2-7b"]:
-        for file_name in ["tendency_gen_predictions.json", "tendency_gen_serac_predictions.json", "tendency_gen_ft_predictions.json", "tendency_gen_bm25_predictions.json", "tendency_gen_e5_predictions.json"]:
-            # io_dir = f"../data/processed/tendency/{model}"
-            io_dir = f"../open-source/output/{model}"
-            save_dir = Path(os.path.join(io_dir, "examiner"))
-            save_dir.mkdir(parents=True, exist_ok=True)
-
-            input_path = os.path.join(io_dir, file_name)
-            save_path = os.path.join(save_dir, file_name)
-
-            construct_query(input_path, save_path)
-
 

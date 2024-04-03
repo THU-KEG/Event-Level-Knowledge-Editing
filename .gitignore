@@ -1,0 +1,3 @@
+data/processed/*
+**/__pycache__
+**/*.pkl

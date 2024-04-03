@@ -388,69 +388,119 @@ class MetricForAutoEval():
 
 
 if __name__ == "__main__":
-    # models = ["gpt-j-6b", "tulu-v2-7b", "Mistral-7B-Instruct-v0.2"]
-    # # models = ["Mistral-7B-Instruct-v0.2"]
-    # # # io_dir = "data/processed/fact/gemini-pro"
-    # models = ["gpt-4", "gpt-3.5", "gemini-pro"]
-    # # models = ["gpt-3.5"]
-    # # files = [
-    # #     ("fact_predictions.json", "metrics_icl.json"),
-    # #     ("fact_bm25_predictions.json", "metrics_bm25.json"),
-    # #     ("fact_e5_predictions.json", "metrics_e5.json"),
-    # #     ("fact_serac_predictions.json", "metrics_serac.json"),
-    # #     ("fact_ft_predictions.json", "metrics_ft.json") 
-    # # ]
-    # files = [
-    #     ("fact.json", "metrics_icl.json"),
-    #     ("fact_bm25.json", "metrics_bm25.json"),
-    #     ("fact_e5.json", "metrics_e5.json"),
-    #     ("fact_serac.json", "metrics_serac.json")
-    # ]
-    # for model in models:
-    #     for file in files:
-    #         # io_dir = f"open-source/output/{model}"
-    #         io_dir = f"data/processed/fact/{model}"
-    #         # answer_file = "open-source/output/vicuna-7b-full/predictions.json"
-    #         answer_file = os.path.join(io_dir, file[0])
-    #         data, predictions, labels = MetricForFact.load_file(answer_file)
-    #         local_file = os.path.join(io_dir, "fact_local.json")
-    #         locality_data, _, _ = MetricForFact.load_file(local_file)
+    # Factual Knowledge
+    models = ["gpt-4", "gpt-3.5", "gemini-pro"]
+    files = [
+        ("fact.json", "metrics_icl.json"),
+        ("fact_bm25.json", "metrics_bm25.json"),
+        ("fact_e5.json", "metrics_e5.json"),
+        ("fact_serac.json", "metrics_serac.json")
+    ]
+    for model in models:
+        for file in files:
+            io_dir = f"data/processed/fact/{model}"
+            answer_file = os.path.join(io_dir, file[0])
+            data, predictions, labels = MetricForFact.load_file(answer_file)
+            local_file = os.path.join(io_dir, "fact_local.json")
+            locality_data, _, _ = MetricForFact.load_file(local_file)
             
-    #         metric = MetricForFact(predictions, labels, data, locality_data)
-    #         metric.compute_acc()
-    #         metric.compute_event_acc()
-    #         metric.compute_locality()
-    #         metric.dump_metrics(os.path.join(io_dir, file[1]))
+            metric = MetricForFact(predictions, labels, data, locality_data)
+            metric.compute_acc()
+            metric.compute_event_acc()
+            metric.compute_locality()
+            metric.dump_metrics(os.path.join(io_dir, file[1]))
+
+    models = ["gpt-j-6b", "tulu-v2-7b", "Mistral-7B-Instruct-v0.2"]
+    files = [
+        ("fact_predictions.json", "metrics_icl.json"),
+        ("fact_bm25_predictions.json", "metrics_bm25.json"),
+        ("fact_e5_predictions.json", "metrics_e5.json"),
+        ("fact_serac_predictions.json", "metrics_serac.json"),
+        ("fact_ft_predictions.json", "metrics_ft.json") 
+    ]
+    for model in models:
+        for file in files:
+            io_dir = f"open-source/output/{model}"
+            answer_file = os.path.join(io_dir, file[0])
+            data, predictions, labels = MetricForFact.load_file(answer_file)
+            local_file = os.path.join(io_dir, "fact_local.json")
+            locality_data, _, _ = MetricForFact.load_file(local_file)
+            
+            metric = MetricForFact(predictions, labels, data, locality_data)
+            metric.compute_acc()
+            metric.compute_event_acc()
+            metric.compute_locality()
+            metric.dump_metrics(os.path.join(io_dir, file[1]))
 
 
-    # # models = ["Mistral-7B-Instruct-v0.2"]
-    # # models = ["tulu-v2-7b"]
-    # models = ["gpt-j-6b"]
-    # files = [
-    #     ("tendency_mc_predictions.json", "metrics_mc_icl.json"),
-    #     ("tendency_mc_bm25_predictions.json", "metrics_mc_bm25.json"),
-    #     ("tendency_mc_e5_predictions.json", "metrics_mc_e5.json"),
-    #     ("tendency_mc_serac_predictions.json", "metrics_mc_serac.json"),
-    #     ("tendency_mc_ft_predictions.json", "metrics_mc_ft.json")
-    # ]
-    # for model in models:
-    #     for file in files:
-    #         io_dir = f"open-source/output/{model}"
-    #         answer_file = os.path.join(io_dir, file[0])
-    #         data, predictions, labels = MetricForTendency.load_file(answer_file)
-    #         local_file = os.path.join(io_dir, "tendency_mc_local_predictions.json")
-    #         # local_file = os.path.join(os.path.join(io_dir, "local"), "tendency_mc_local.json")
-    #         locality_data, _, _ = MetricForTendency.load_file(local_file)
+
+    # Tendency: Multiple choice
+    models = ["gpt-4", "gpt-3.5", "gemini-pro"]
+    files = [
+        ("tendency_mc_predictions.json", "metrics_mc_icl.json"),
+        ("tendency_mc_bm25_predictions.json", "metrics_mc_bm25.json"),
+        ("tendency_mc_e5_predictions.json", "metrics_mc_e5.json"),
+        ("tendency_mc_serac_predictions.json", "metrics_mc_serac.json"),
+    ]
+    for model in models:
+        for file in files:
+            io_dir = f"data/processed/tendency/{model}/examiner"
+            answer_file = os.path.join(io_dir, file[0])
+            data, predictions, labels = MetricForTendency.load_file(answer_file)
+            local_file = os.path.join(io_dir, "tendency_mc_local.json")
+            locality_data, _, _ = MetricForTendency.load_file(local_file)
             
-    #         metric = MetricForTendency(predictions, labels, data, locality_data)
-    #         metric.compute_acc()
-    #         metric.compute_event_acc()
-    #         metric.compute_locality()
-    #         metric.dump_metrics(os.path.join(io_dir, file[1]))
+            metric = MetricForTendency(predictions, labels, data, locality_data)
+            metric.compute_acc()
+            metric.compute_event_acc()
+            metric.compute_locality()
+            metric.dump_metrics(os.path.join(io_dir, file[1]))
+
+    models = ["tulu-v2-7b", "Mistral-7B-Instruct-v0.2", "gpt-j-6b"]
+    files = [
+        ("tendency_mc_predictions.json", "metrics_mc_icl.json"),
+        ("tendency_mc_bm25_predictions.json", "metrics_mc_bm25.json"),
+        ("tendency_mc_e5_predictions.json", "metrics_mc_e5.json"),
+        ("tendency_mc_serac_predictions.json", "metrics_mc_serac.json"),
+        ("tendency_mc_ft_predictions.json", "metrics_mc_ft.json")
+    ]
+    for model in models:
+        for file in files:
+            io_dir = f"open-source/output/{model}"
+            answer_file = os.path.join(io_dir, file[0])
+            data, predictions, labels = MetricForTendency.load_file(answer_file)
+            local_file = os.path.join(io_dir, "tendency_mc_local_predictions.json")
+            locality_data, _, _ = MetricForTendency.load_file(local_file)
+            
+            metric = MetricForTendency(predictions, labels, data, locality_data)
+            metric.compute_acc()
+            metric.compute_event_acc()
+            metric.compute_locality()
+            metric.dump_metrics(os.path.join(io_dir, file[1]))
     
-    # models = ["gpt-4", "gpt-3.5", "gemini-pro"]
-    models = ["tulu-v2-7b", "Mistral-7B-Instruct-v0.2"]
-    models += ["gpt-j-6b"]
+
+
+    # Tendency: Open-ended Generation
+    # GPT-4 scored scores for all models
+    models = ["gpt-4", "gpt-3.5", "gemini-pro"]
+    files = [
+        ("tendency_gen_exam.json", "metrics_gen_icl.json"),
+        ("tendency_gen_bm25_exam.json", "metrics_gen_bm25.json"),
+        ("tendency_gen_e5_exam.json", "metrics_gen_e5.json"),
+        ("tendency_gen_serac_exam.json", "metrics_gen_serac.json"),
+    ]
+    for model in models:
+        for file in files:
+            io_dir = f"data/processed/tendency/{model}/examiner"
+            answer_file = os.path.join(io_dir, file[0])
+            data = MetricForAutoEval.load_file(answer_file)
+            metric = MetricForAutoEval(data)
+            metric.compute_score()
+            metric.compute_event_score()
+            metric.dump_metrics(os.path.join(io_dir, file[1]))
+
+
+    models = ["tulu-v2-7b", "Mistral-7B-Instruct-v0.2", "gpt-j-6b"]
     files = [
         ("tendency_gen_exam.json", "metrics_gen_icl.json"),
         ("tendency_gen_bm25_exam.json", "metrics_gen_bm25.json"),
@@ -460,7 +510,6 @@ if __name__ == "__main__":
     ]
     for model in models:
         for file in files:
-            # io_dir = f"data/processed/tendency/{model}/examiner"
             io_dir = f"open-source/output/{model}/examiner"
             answer_file = os.path.join(io_dir, file[0])
             data = MetricForAutoEval.load_file(answer_file)

@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 from collections import Counter, defaultdict
 from prompt import local_examples
+import argparse
 
 
 def load_generation(input_path, local_path):
@@ -93,32 +94,31 @@ def construct_query(input_path, local_path, save_path):
 
 
 if __name__ == "__main__":
-    files = ["tendency_gen", "tendency_gen_ft", "tendency_gen_bm25", "tendency_gen_e5", "tendency_gen_serac"]
-    models = ["gpt-j-6b", "Mistral-7B-Instruct-v0.2", "tulu-v2-7b"]
-    for model in models:
-        for file in files:
-            # io_dir = f"../data/processed/tendency/{model}"
-            io_dir = f"../open-source/output/{model}"
-            save_dir = Path(os.path.join(io_dir, "examiner-local"))
-            save_dir.mkdir(parents=True, exist_ok=True)
-
-            file_name = f"{file}_predictions.json"
-            input_path = os.path.join(io_dir, file_name)
-            # local_path = os.path.join(os.path.join(io_dir, "local"), f"tendency_gen_local_predictions.json")
-            local_path = os.path.join(io_dir, f"tendency_gen_local_predictions.json")
-            save_path = os.path.join(save_dir, file_name)
-
-            construct_query(input_path, local_path, save_path)
-    
-    # for model in ["gpt-3.5", "gpt-4", "gemini-pro"]:
-    #     for file_name in ["tendency_gen_bm25.json", "tendency_gen_e5.json"]:
-    #         io_dir = f"../data/processed/tendency/{model}"
-    #         save_dir = Path(os.path.join(io_dir, "examiner"))
-    #         save_dir.mkdir(parents=True, exist_ok=True)
-
-    #         input_path = os.path.join(io_dir, file_name)
-    #         save_path = os.path.join(save_dir, file_name)
-
-    #         construct_query(input_path, save_path)
+    parser = argparse.ArgumentParser(description="Query data for locality")
+    parser.add_argument("--model", type=str, default="gpt-3.5")
+    parser.add_argument("--file", type=str, default="gen", options=["gen_ft", "gen_bm25", "gen_e5", "gen_serac", "gen"])
+    args = parser.parse_args()
 
 
+    if args.model in ["gpt-j-6b", "Mistral-7B-Instruct-v0.2", "tulu-v2-7b"]:
+        io_dir = f"../open-source/output/{args.model}"
+        save_dir = Path(os.path.join(io_dir, "examiner-local"))
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        file_name = f"tendency_{args.file}_predictions.json"
+        input_path = os.path.join(io_dir, file_name)
+        local_path = os.path.join(io_dir, f"tendency_gen_local_predictions.json")
+        save_path = os.path.join(save_dir, file_name)
+
+        construct_query(input_path, local_path, save_path)
+    else:
+        io_dir = f"../data/processed/tendency/{args.model}"
+        save_dir = Path(os.path.join(io_dir, "examiner-local"))
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        file_name = f"tendency_{args.file}.json"
+        input_path = os.path.join(io_dir, file_name)
+        local_path = os.path.join(io_dir, f"tendency_gen_local.json")
+        save_path = os.path.join(save_dir, file_name)
+
+        construct_query(input_path, local_path, save_path)
